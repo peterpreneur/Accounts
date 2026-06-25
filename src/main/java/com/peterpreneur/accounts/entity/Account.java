@@ -6,11 +6,13 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -23,6 +25,7 @@ import lombok.Setter;
 public class Account {
 
     @Id
+    @GeneratedValue
     private UUID id;
 
     @Column(name = "account_number", nullable = false, unique = true, length = 25)
@@ -56,5 +59,16 @@ public class Account {
     @PreUpdate
     public void preUpdate() {
         updatedAt = Instant.now();
+    }
+
+    @Builder
+    public Account(String accountNumber,
+                   String statusName,
+                   String statusReasonName,
+                   LocalDate accountOpenDate) {
+        this.accountNumber = accountNumber;
+        this.statusName = statusName;
+        this.statusReasonName = statusReasonName;
+        this.accountOpenDate = accountOpenDate;
     }
 }
