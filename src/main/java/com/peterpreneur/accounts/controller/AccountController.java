@@ -11,6 +11,7 @@ import com.peterpreneur.accounts.dto.AccountResponse;
 import com.peterpreneur.accounts.dto.CreateAccountRequest;
 import com.peterpreneur.accounts.service.AccountService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,8 +22,8 @@ public class AccountController {
     private final AccountService accountService;
 
     @PostMapping
-    public ResponseEntity<AccountResponse> createAccount(@RequestBody CreateAccountRequest request) {
+    public ResponseEntity<AccountResponse> createAccount(@Valid @RequestBody CreateAccountRequest request) {
         AccountResponse response = accountService.createAccount(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);    
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
