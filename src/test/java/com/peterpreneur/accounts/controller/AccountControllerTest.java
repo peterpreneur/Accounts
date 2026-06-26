@@ -1,21 +1,21 @@
 package com.peterpreneur.accounts.controller;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.peterpreneur.accounts.dto.AccountResponse;
 import com.peterpreneur.accounts.dto.CreateAccountRequest;
@@ -33,7 +33,6 @@ public class AccountControllerTest {
 
     @Test
     void shouldCreateAccount() throws Exception {
-
         AccountResponse response = AccountResponse.builder()
                 .id(UUID.randomUUID())
                 .accountNumber("ACC-1001")
@@ -64,11 +63,11 @@ public class AccountControllerTest {
         mockMvc.perform(post("/accounts")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                            {
-                              "statusName": "OPEN",
-                              "accountOpenDate": "2026-06-25"
-                            }
-                            """))
+                        {
+                          "statusName": "OPEN",
+                          "accountOpenDate": "2026-06-25"
+                        }
+                        """))
                 .andExpect(status().isBadRequest());
     }
 
@@ -83,21 +82,42 @@ public class AccountControllerTest {
                 .statusReasonName("Updated account")
                 .build();
 
-        given(accountService.updateAccount(eq(id), any(UpdateAccountRequest.class))).willReturn(response);
+        given(accountService.updateAccount(eq(id), any(UpdateAccountRequest.class)))
+                .willReturn(response);
 
         mockMvc.perform(put("/accounts/{id}", id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
-                            {
-                              "accountNumber": "ACC-1001",
-                              "statusName": "PENDING",
-                              "statusReasonName": "Updated account",
-                              "accountOpenDate": "2026-06-25"
-                            }
-                            """))
+                        {
+                          "accountNumber": "ACC-1001",
+                          "statusName": "PENDING",
+                          "statusReasonName": "Updated account",
+                          "accountOpenDate": "2026-06-25"
+                        }
+                        """))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accountNumber").value("ACC-1001"))
                 .andExpect(jsonPath("$.statusReasonName").value("Updated account"));
     }
 
+    @Test
+    void shouldGetAccountById() throws Exception {
+        UUID id = UUID.randomUUID();
+
+        AccountResponse response = AccountResponse.builder()
+                .id(id)
+                .accountNumber("ACC-1001")
+                .statusName("OPEN")
+                .statusReasonName("New account")
+                .build();
+
+        given(accountService.getAccountById(id)).willReturn(response);
+
+        mockMvc.perform(get("/accounts/{id}", id))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(id.toString()))
+                .andExpect(jsonPath("$.accountNumber").value("ACC-1001"))
+                .andExpect(jsonPath("$.statusName").value("OPEN"))
+                .andExpect(jsonPath("$.statusReasonName").value("New account"));
+    }
 }

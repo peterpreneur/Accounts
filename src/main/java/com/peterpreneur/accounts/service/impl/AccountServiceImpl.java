@@ -8,6 +8,7 @@ import com.peterpreneur.accounts.dto.AccountResponse;
 import com.peterpreneur.accounts.dto.CreateAccountRequest;
 import com.peterpreneur.accounts.dto.UpdateAccountRequest;
 import com.peterpreneur.accounts.entity.Account;
+import com.peterpreneur.accounts.exception.AccountNotFoundException;
 import com.peterpreneur.accounts.repository.AccountRepository;
 import com.peterpreneur.accounts.service.AccountService;
 
@@ -48,7 +49,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public AccountResponse getAccountById(UUID id) {
         Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
+                .orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + id));
 
         return mapToResponse(account);
     }
