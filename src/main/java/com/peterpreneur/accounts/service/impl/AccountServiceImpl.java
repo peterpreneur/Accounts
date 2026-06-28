@@ -35,7 +35,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountResponse updateAccount(UUID id, UpdateAccountRequest request) {
-        Account existingAccount = accountRepository.findById(id).orElseThrow(() -> new RuntimeException("Account not found with id: " + id));
+        Account existingAccount = accountRepository.findById(id).orElseThrow(() -> new AccountNotFoundException("Account not found with id: " + id));
 
         existingAccount.setAccountNumber(request.getAccountNumber());
         existingAccount.setStatusName(request.getStatusName());
